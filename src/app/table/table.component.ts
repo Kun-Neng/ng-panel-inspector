@@ -21,6 +21,10 @@ export class TableComponent implements OnInit, OnDestroy {
 
     this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
       console.log(defect);
+      const thisDefect = this.dataSource.data.find((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
+      if (thisDefect) {
+        thisDefect.isSelected = defect.isSelected;
+      }
     });
   }
 
