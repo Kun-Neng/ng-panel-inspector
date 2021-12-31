@@ -23,16 +23,35 @@ interface Trace {
 export class PanelComponent implements OnInit, OnDestroy {
   private markerStyles: { color: string, opacity: number[], size: number };
   private data: Trace;
+  private selectedPointNumber: number;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
     this.markerStyles = { color: '#FF0000', opacity: [], size: 8 };
     const defects = Array.from(this.mockDataService.getDefects().values());
     this.data = this.createDefectCircles(defects);
+    this.selectedPointNumber = -1;
 
     this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
-      console.log(defect);
-      // TODO: highlight the selected defect
+      // console.log(defect);
+
+      if (defect.isSelected) {
+        for (let index = 0; index < 100; index++) {
+          if (this.data.x[index] === defect.x && this.data.y[index] === defect.y) {
+            this.selectedPointNumber = index;
+            break;
+          }
+        }
+  
+        const color = this.data.marker!.color;
+        color[this.selectedPointNumber] = '#0000FF';
+        const opacity = this.markerStyles.opacity;
+        opacity[this.selectedPointNumber] = defect.severity / 100;
+        const size = this.data.marker!.size;
+        size[this.selectedPointNumber] = 12;
+  
+        this.updateMarkerStyles(color, opacity, size, 0);
+      }
     });
   }
 
@@ -72,36 +91,46 @@ export class PanelComponent implements OnInit, OnDestroy {
     myPanel.on('plotly_click', (data: any) => {
       // console.log(data);
 
-      let uuid = '';
-      let pointNumber = '';
-      // let curveNumber = '';
-      let color = [];
-      let opacity = [];
-      let size = [];
+      // Reset all the marker styles
+      if (this.selectedPointNumber !== -1) {
+        this.data.marker!.color[this.selectedPointNumber] = this.markerStyles.color;
+        this.data.marker!.opacity = this.markerStyles.opacity;
+        this.data.marker!.size[this.selectedPointNumber] = this.markerStyles.size;
+      }
 
-      for (let i = 0; i < data.points.length; i++) {
+      // this.mockDataService.setAllDefectsSelected(false);
+      const prevUUID = `${this.data.x[this.selectedPointNumber]},${this.data.y[this.selectedPointNumber]}`;
+      this.mockDataService.setDefectIsSelected(prevUUID, false);
+
+      let uuid = '';
+      // let curveNumber = '';
+      let color: string[] = [];
+      let opacity: number[] = [];
+      let size: number[] = [];
+
+      const numDataPoints = data.points.length;
+      for (let i = 0; i < numDataPoints; i++) {
         const selectedPoint = data.points[i];
         // console.log(selectedPoint);
 
         uuid = `${selectedPoint.x},${selectedPoint.y}`;
         // console.log(`Defect ${uuid} is clicked.`);
 
-        pointNumber = selectedPoint.pointNumber;
+        this.selectedPointNumber = selectedPoint.pointNumber;
         // curveNumber = selectedPoint.curveNumber;
-        // console.log(pointNumber, curveNumber);
         color = selectedPoint.data.marker.color;
         opacity = selectedPoint.data.marker.opacity;
         size = selectedPoint.data.marker.size;
       }
 
       if (uuid !== '') {
-        if (color[pointNumber] === this.markerStyles.color) {
-          color[pointNumber] = '#0000FF';
-          size[pointNumber] = 12;
+        if (color[this.selectedPointNumber] === this.markerStyles.color) {
+          color[this.selectedPointNumber] = '#0000FF';
+          size[this.selectedPointNumber] = 12;
           this.mockDataService.setDefectIsSelected(uuid, true);
         } else {
-          color[pointNumber] = this.markerStyles.color;
-          size[pointNumber] = this.markerStyles.size;
+          color[this.selectedPointNumber] = this.markerStyles.color;
+          size[this.selectedPointNumber] = this.markerStyles.size;
           this.mockDataService.setDefectIsSelected(uuid, false);
         }
 
