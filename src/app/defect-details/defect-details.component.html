@@ -7,9 +7,9 @@
         <div>Y</div>
       </td>
       <td class="defect-value">
-        <div>200,300</div>
-        <div>200</div>
-        <div>300</div>
+        <div *ngIf="defectDetails.uuid !== ''">{{defectDetails.uuid}}</div>
+        <div *ngIf="defectDetails.x !== -1">{{defectDetails.x}}</div>
+        <div *ngIf="defectDetails.y !== -1">{{defectDetails.y}}</div>
       </td>
       <td class="severity-container">
         <div>
@@ -18,12 +18,13 @@
         <mat-slider
           thumbLabel
           class="severity-slider"
+          [disabled]="defectDetails.severity === -1"
           [tickInterval]="getSliderTickInterval()"
           [displayWith]="formatLabel"
           [max]="max" [min]="min" [step]="step"
-          [(ngModel)]="severityValue" (change)="updateSeverity(severityValue)">
+          [(ngModel)]="defectDetails!.severity" (change)="updateSeverity(defectDetails!.severity)">
         </mat-slider>
-        <label class="severity-value-label">{{severityValue}}</label>
+        <label *ngIf="defectDetails.severity > 0" class="severity-value-label">{{defectDetails!.severity}}</label>
         <div class="severity-limit">
           <span>10</span><span>100</span>
         </div>
