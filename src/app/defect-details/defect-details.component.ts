@@ -63,6 +63,7 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
   }
 
   updateSeverity(value: number) {
-    console.log(value);
+    // console.log(value);
+    this.mockDataService.setDefectSeverity(this.defectDetails.uuid, value);
   }
 }
