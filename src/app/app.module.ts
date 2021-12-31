@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTableModule } from '@angular/material/table';
 import { MainComponent } from './main/main.component';
 import { TableComponent } from './table/table.component';
 import { PanelComponent } from './panel/panel.component';
@@ -19,7 +20,8 @@ import { DefectDetailsComponent } from './defect-details/defect-details.componen
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent],
