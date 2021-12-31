@@ -31,4 +31,8 @@ export class TableComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.defectSubscription.unsubscribe();
   }
+
+  getDefect(row: Defect) {
+    console.log(row);
+  }
 }
