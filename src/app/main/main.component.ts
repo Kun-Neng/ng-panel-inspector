@@ -15,7 +15,7 @@ export class MainComponent implements OnInit {
   constructor(private mockDataService: MockDataService) {
     this.rowHeight = '33.1vh';
     this.tileStyle = {
-      background: 'lightgreen'
+      background: 'white'
     };
 
     this.mockDataService.createPanel({ width: 300, height: 400 });
