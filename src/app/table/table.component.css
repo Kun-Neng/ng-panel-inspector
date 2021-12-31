@@ -7,3 +7,8 @@ table {
   max-width: 100%;
   overflow: auto;
 }
+
+.isSelected {
+  background-color: lightblue;
+  font-weight: bold;
+}

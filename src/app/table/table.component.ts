@@ -33,6 +33,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getDefect(row: Defect) {
-    console.log(row);
+    // console.log(row);
+    row.isSelected = !row.isSelected;
+    this.mockDataService.setDefectIsSelected(row.uuid, row.isSelected);
   }
 }
