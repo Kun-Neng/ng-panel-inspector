@@ -11,6 +11,10 @@ export class MockDataService {
 
   constructor() { }
 
+  getDefects(): Map<string, Defect> {
+    return this.defects;
+  }
+
   createPanel(panelLayout: Panel): number {
     const pixels = panelLayout.width * panelLayout.height;
     let chosenIndex: number[] = [];
