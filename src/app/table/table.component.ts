@@ -12,19 +12,28 @@ import { Defect } from '../interface/defect';
 export class TableComponent implements OnInit, OnDestroy {
   columnTitles: string[];
   dataSource = new MatTableDataSource<Defect>();
+  private selectedRow: string;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
     this.columnTitles = ['i', 'x', 'y'];
     this.dataSource.data = Array.from(this.mockDataService.getDefects().values());
     // console.log(this.dataSource);
+    this.selectedRow = '';
 
     this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
-      console.log(defect);
-      const thisDefect = this.dataSource.data.find((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
-      if (thisDefect) {
-        thisDefect.isSelected = defect.isSelected;
-      }
+      this.selectedRow = defect.uuid;
+
+      // const thisRow = this.dataSource.data.find((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
+      // if (thisRow) {
+      //   thisRow.isSelected = defect.isSelected;
+      // }
+      this.dataSource.data = this.dataSource.data.filter((defectInTable: Defect) => {
+        if (defectInTable.uuid === defect.uuid) {
+          defectInTable.isSelected = defect.isSelected;
+        }
+        return true;
+      });
     });
   }
 
@@ -38,6 +47,13 @@ export class TableComponent implements OnInit, OnDestroy {
 
   getDefect(row: Defect) {
     // console.log(row);
+
+    // Unselect previous row
+    if (this.selectedRow !== '') {
+      this.mockDataService.setDefectIsSelected(this.selectedRow, false);
+    }
+    this.selectedRow = row.uuid;
+    
     row.isSelected = !row.isSelected;
     this.mockDataService.setDefectIsSelected(row.uuid, row.isSelected);
   }

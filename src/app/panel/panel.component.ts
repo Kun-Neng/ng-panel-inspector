@@ -33,9 +33,13 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.selectedPointNumber = -1;
 
     this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
-      // console.log(defect);
-
       if (defect.isSelected) {
+        if (this.selectedPointNumber !== -1) {
+          this.data.marker!.color[this.selectedPointNumber] = this.markerStyles.color;
+          this.data.marker!.opacity = this.markerStyles.opacity;
+          this.data.marker!.size[this.selectedPointNumber] = this.markerStyles.size;
+        }
+
         for (let index = 0; index < 100; index++) {
           if (this.data.x[index] === defect.x && this.data.y[index] === defect.y) {
             this.selectedPointNumber = index;
@@ -91,16 +95,15 @@ export class PanelComponent implements OnInit, OnDestroy {
     myPanel.on('plotly_click', (data: any) => {
       // console.log(data);
 
-      // Reset all the marker styles
+      // Reset all the marker styles and set previous defect unselected
       if (this.selectedPointNumber !== -1) {
         this.data.marker!.color[this.selectedPointNumber] = this.markerStyles.color;
         this.data.marker!.opacity = this.markerStyles.opacity;
         this.data.marker!.size[this.selectedPointNumber] = this.markerStyles.size;
-      }
 
-      // this.mockDataService.setAllDefectsSelected(false);
-      const prevUUID = `${this.data.x[this.selectedPointNumber]},${this.data.y[this.selectedPointNumber]}`;
-      this.mockDataService.setDefectIsSelected(prevUUID, false);
+        const prevUUID = `${this.data.x[this.selectedPointNumber]},${this.data.y[this.selectedPointNumber]}`;
+        this.mockDataService.setDefectIsSelected(prevUUID, false);
+      }
 
       let uuid = '';
       // let curveNumber = '';
@@ -116,7 +119,7 @@ export class PanelComponent implements OnInit, OnDestroy {
         uuid = `${selectedPoint.x},${selectedPoint.y}`;
         // console.log(`Defect ${uuid} is clicked.`);
 
-        this.selectedPointNumber = selectedPoint.pointNumber;
+        this.selectedPointNumber = Number(selectedPoint.pointNumber);
         // curveNumber = selectedPoint.curveNumber;
         color = selectedPoint.data.marker.color;
         opacity = selectedPoint.data.marker.opacity;
