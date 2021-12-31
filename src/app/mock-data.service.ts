@@ -6,17 +6,23 @@ import { Panel } from './interface/panel';
   providedIn: 'root'
 })
 export class MockDataService {
-  private numDefects = 100;
+  private panelLayout: Panel = { width: 300, height: 400 };
+  private numDefects: number = 100;
   private defects: Map<string, Defect> = new Map<string, Defect>();
 
   constructor() { }
+
+  getPanelLayout(): Panel {
+    return this.panelLayout;
+  }
 
   getDefects(): Map<string, Defect> {
     return this.defects;
   }
 
-  createPanel(panelLayout: Panel): number {
-    const pixels = panelLayout.width * panelLayout.height;
+  createPanel(panelLayout: Panel = this.panelLayout): number {
+    this.panelLayout = panelLayout;
+    const pixels = this.panelLayout.width * this.panelLayout.height;
     let chosenIndex: number[] = [];
 
     while (chosenIndex.length < this.numDefects) {
