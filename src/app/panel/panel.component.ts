@@ -11,7 +11,7 @@ interface Trace {
   y: number[];
   hoverinfo: string;
   hovertext: string[];
-  marker?: { color: string, opacity: number[], size: number };
+  marker?: { color: string[], opacity: number[], size: number[] };
 }
 
 @Component({
@@ -20,13 +20,19 @@ interface Trace {
   styleUrls: ['./panel.component.css']
 })
 export class PanelComponent implements OnInit {
-  constructor(private mockDataService: MockDataService) { }
+  private oriMarkerStyle: { color: string, size: number };
+  private numDefects: number;
+  private data: Trace;
+
+  constructor(private mockDataService: MockDataService) {
+    this.oriMarkerStyle = { color: '#FF0000', size: 8 };
+    const defects = Array.from(this.mockDataService.getDefects().values());
+    this.numDefects = defects.length;
+    this.data = this.createDefectCircles(defects);
+  }
 
   ngOnInit(): void {
     const panelLayout = this.mockDataService.getPanelLayout();
-    const defects = Array.from(this.mockDataService.getDefects().values());
-    const data = [this.createDefectCircles(defects)];
-
     const layout = {
       title: { text: 'Panel' },
       height: window.screen.height * 0.6,
@@ -36,10 +42,7 @@ export class PanelComponent implements OnInit {
         t: 40, b: 30,
         l: 40, r: 30,
       },
-      scene: {
-        // hovermode: 'closest'
-        hovermode: false
-      },
+      hovermode: 'closest',
       xaxis: {
         color: 'black',
         range: [0, panelLayout.width]
@@ -52,31 +55,79 @@ export class PanelComponent implements OnInit {
 
     const config = {
       displayModeBar: false,
+      doubleClick: false,
       // responsive: true,
       // staticPlot: true
     };
 
-    Plotly.newPlot('myPanel', data, layout, config);
+    Plotly.newPlot('myPanel', [this.data], layout, config);
+    
+    const myPanel: any = document.querySelector('#myPanel');
+    // reference to https://plotly.com/javascript/plotlyjs-events/
+    myPanel.on('plotly_click', (data: any) => {
+      // console.log(data);
+
+      let uuid = '';
+      let pointNumber = '';
+      let curveNumber = '';
+      let color = [];
+      let opacity = [];
+      let size = [];
+
+      for (let i = 0; i < data.points.length; i++) {
+        const selectedPoint = data.points[i];
+        // console.log(selectedPoint);
+
+        uuid = `${selectedPoint.x},${selectedPoint.y}`;
+        // console.log(`Defect ${uuid} is clicked.`);
+
+        pointNumber = selectedPoint.pointNumber;
+        curveNumber = selectedPoint.curveNumber;
+        // console.log(pointNumber, curveNumber);
+        color = selectedPoint.data.marker.color;
+        opacity = selectedPoint.data.marker.opacity;
+        size = selectedPoint.data.marker.size;
+      }
+
+      if (uuid !== '') {
+        if (color[pointNumber] === this.oriMarkerStyle.color) {
+          color[pointNumber] = '#0000FF';
+          size[pointNumber] = 12;
+          this.mockDataService.setDefectIsSelected(uuid, true);
+        } else {
+          color[pointNumber] = this.oriMarkerStyle.color;
+          size[pointNumber] = this.oriMarkerStyle.size;
+          this.mockDataService.setDefectIsSelected(uuid, false);
+        }
+
+        const update = { 'marker': { color, opacity, size } };
+        Plotly.restyle('myPanel', update, [curveNumber]);
+      }
+    });
   }
 
   private createDefectCircles(defects: Defect[]): Trace {
     const x: number[] = [];
     const y: number[] = [];
     const hovertext: string[] = [];
+    const colors: string[] = [];
     const opacity: number[] = [];
+    const size: number[] = [];
 
     defects.forEach((defect: Defect) => {
       x.push(defect.x);
       y.push(defect.y);
       hovertext.push(`${defect.uuid}: ${defect.severity}`);
+      colors.push(this.oriMarkerStyle.color);
       opacity.push(defect.severity / 100);
+      size.push(this.oriMarkerStyle.size);
     });
 
     return {
       mode: 'markers',
       type: 'scatter',
       x, y, hoverinfo: 'text', hovertext,
-      marker: { color: '#FF0000', opacity: opacity, size: 10 }
+      marker: { color: colors, opacity, size }
     }
   }
 }
