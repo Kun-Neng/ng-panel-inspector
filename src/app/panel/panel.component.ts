@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MockDataService } from '../mock-data.service';
 import { Defect } from '../interface/defect';
 
@@ -19,16 +20,20 @@ interface Trace {
   templateUrl: './panel.component.html',
   styleUrls: ['./panel.component.css']
 })
-export class PanelComponent implements OnInit {
-  private oriMarkerStyle: { color: string, size: number };
-  private numDefects: number;
+export class PanelComponent implements OnInit, OnDestroy {
+  private markerStyles: { color: string, opacity: number[], size: number };
   private data: Trace;
+  private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
-    this.oriMarkerStyle = { color: '#FF0000', size: 8 };
+    this.markerStyles = { color: '#FF0000', opacity: [], size: 8 };
     const defects = Array.from(this.mockDataService.getDefects().values());
-    this.numDefects = defects.length;
     this.data = this.createDefectCircles(defects);
+
+    this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
+      console.log(defect);
+      // TODO: highlight the selected defect
+    });
   }
 
   ngOnInit(): void {
@@ -69,7 +74,7 @@ export class PanelComponent implements OnInit {
 
       let uuid = '';
       let pointNumber = '';
-      let curveNumber = '';
+      // let curveNumber = '';
       let color = [];
       let opacity = [];
       let size = [];
@@ -82,7 +87,7 @@ export class PanelComponent implements OnInit {
         // console.log(`Defect ${uuid} is clicked.`);
 
         pointNumber = selectedPoint.pointNumber;
-        curveNumber = selectedPoint.curveNumber;
+        // curveNumber = selectedPoint.curveNumber;
         // console.log(pointNumber, curveNumber);
         color = selectedPoint.data.marker.color;
         opacity = selectedPoint.data.marker.opacity;
@@ -90,20 +95,23 @@ export class PanelComponent implements OnInit {
       }
 
       if (uuid !== '') {
-        if (color[pointNumber] === this.oriMarkerStyle.color) {
+        if (color[pointNumber] === this.markerStyles.color) {
           color[pointNumber] = '#0000FF';
           size[pointNumber] = 12;
           this.mockDataService.setDefectIsSelected(uuid, true);
         } else {
-          color[pointNumber] = this.oriMarkerStyle.color;
-          size[pointNumber] = this.oriMarkerStyle.size;
+          color[pointNumber] = this.markerStyles.color;
+          size[pointNumber] = this.markerStyles.size;
           this.mockDataService.setDefectIsSelected(uuid, false);
         }
 
-        const update = { 'marker': { color, opacity, size } };
-        Plotly.restyle('myPanel', update, [curveNumber]);
+        this.updateMarkerStyles(color, opacity, size, 0);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.defectSubscription.unsubscribe();
   }
 
   private createDefectCircles(defects: Defect[]): Trace {
@@ -111,23 +119,27 @@ export class PanelComponent implements OnInit {
     const y: number[] = [];
     const hovertext: string[] = [];
     const colors: string[] = [];
-    const opacity: number[] = [];
     const size: number[] = [];
 
     defects.forEach((defect: Defect) => {
       x.push(defect.x);
       y.push(defect.y);
       hovertext.push(`${defect.uuid}: ${defect.severity}`);
-      colors.push(this.oriMarkerStyle.color);
-      opacity.push(defect.severity / 100);
-      size.push(this.oriMarkerStyle.size);
+      colors.push(this.markerStyles.color);
+      this.markerStyles.opacity.push(defect.severity / 100);
+      size.push(this.markerStyles.size);
     });
 
     return {
       mode: 'markers',
       type: 'scatter',
       x, y, hoverinfo: 'text', hovertext,
-      marker: { color: colors, opacity, size }
+      marker: { color: colors, opacity: this.markerStyles.opacity, size }
     }
+  }
+  
+  private updateMarkerStyles(color: string[], opacity: number[], size: number[], curveNumber: number) {
+    const update = { 'marker': { color, opacity, size } };
+    Plotly.restyle('myPanel', update, [curveNumber]);
   }
 }
