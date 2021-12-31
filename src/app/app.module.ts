@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTableModule } from '@angular/material/table';
+import { MatSliderModule } from '@angular/material/slider';
+import { FormsModule } from '@angular/forms';
 import { MainComponent } from './main/main.component';
 import { TableComponent } from './table/table.component';
 import { PanelComponent } from './panel/panel.component';
@@ -21,7 +23,9 @@ import { DefectDetailsComponent } from './defect-details/defect-details.componen
     BrowserModule,
     BrowserAnimationsModule,
     MatGridListModule,
-    MatTableModule
+    MatTableModule,
+    MatSliderModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
