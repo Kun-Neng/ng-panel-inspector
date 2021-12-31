@@ -1,1 +1,34 @@
-<p>defect-detail works!</p>
+<div class="defect-details">
+  <table>
+    <tr>
+      <td class="defect-title">
+        <div>uuid</div>
+        <div>X</div>
+        <div>Y</div>
+      </td>
+      <td class="defect-value">
+        <div *ngIf="defectDetails.uuid !== ''">{{defectDetails.uuid}}</div>
+        <div *ngIf="defectDetails.x !== -1">{{defectDetails.x}}</div>
+        <div *ngIf="defectDetails.y !== -1">{{defectDetails.y}}</div>
+      </td>
+      <td class="severity-container">
+        <div>
+          <label class="severity-title">Severity</label>
+        </div>
+        <mat-slider
+          thumbLabel
+          class="severity-slider"
+          [disabled]="defectDetails.severity === -1"
+          [tickInterval]="getSliderTickInterval()"
+          [displayWith]="formatLabel"
+          [max]="max" [min]="min" [step]="step"
+          [(ngModel)]="defectDetails!.severity" (change)="updateSeverity(defectDetails!.severity)">
+        </mat-slider>
+        <label *ngIf="defectDetails.severity > 0" class="severity-value-label">{{defectDetails!.severity}}</label>
+        <div class="severity-limit">
+          <span>10</span><span>100</span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

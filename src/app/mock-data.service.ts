@@ -23,6 +23,14 @@ export class MockDataService {
     return this.defects;
   }
 
+  setDefectSeverity(uuid: string, severity: number) {
+    if (this.defects.has(uuid)) {
+      const thisDefect = this.defects.get(uuid);
+      thisDefect!.severity = severity;
+      this.selectedDefect.next(thisDefect!);
+    }
+  }
+
   setAllDefectsSelected(isSelected: boolean) {
     this.defects.forEach((defect: Defect) => {
       this.setDefectIsSelected(defect.uuid, isSelected);
