@@ -6,7 +6,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MainComponent } from './main/main.component';
 import { TableComponent } from './table/table.component';
 import { PanelComponent } from './panel/panel.component';
-import { DefectDetailComponent } from './defect-detail/defect-detail.component';
+import { DefectDetailsComponent } from './defect-details/defect-details.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +14,7 @@ import { DefectDetailComponent } from './defect-detail/defect-detail.component';
     MainComponent,
     TableComponent,
     PanelComponent,
-    DefectDetailComponent
+    DefectDetailsComponent
   ],
   imports: [
     BrowserModule,
