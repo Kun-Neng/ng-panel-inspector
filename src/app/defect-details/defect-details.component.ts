@@ -30,4 +30,8 @@ export class DefectDetailsComponent implements OnInit {
   formatLabel(value: number) {
     return value;
   }
+
+  updateSeverity(value: number) {
+    console.log(value);
+  }
 }

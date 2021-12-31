@@ -21,7 +21,7 @@
           [tickInterval]="getSliderTickInterval()"
           [displayWith]="formatLabel"
           [max]="max" [min]="min" [step]="step"
-          [(ngModel)]="severityValue">
+          [(ngModel)]="severityValue" (change)="updateSeverity(severityValue)">
         </mat-slider>
         <label class="severity-value-label">{{severityValue}}</label>
         <div class="severity-limit">
