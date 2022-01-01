@@ -35,9 +35,7 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
       if (defect.isSelected) {
         if (this.selectedPointNumber !== -1) {
-          this.data.marker!.color[this.selectedPointNumber] = this.markerStyles.color;
-          this.data.marker!.opacity = this.markerStyles.opacity;
-          this.data.marker!.size[this.selectedPointNumber] = this.markerStyles.size;
+          this.resetAllMarkerStyles();
         }
 
         for (let index = 0; index < 100; index++) {
@@ -95,12 +93,10 @@ export class PanelComponent implements OnInit, OnDestroy {
     myPanel.on('plotly_click', (data: any) => {
       // console.log(data);
 
-      // Reset all the marker styles and set previous defect unselected
       if (this.selectedPointNumber !== -1) {
-        this.data.marker!.color[this.selectedPointNumber] = this.markerStyles.color;
-        this.data.marker!.opacity = this.markerStyles.opacity;
-        this.data.marker!.size[this.selectedPointNumber] = this.markerStyles.size;
+        this.resetAllMarkerStyles();
 
+        // Set previous defect unselected
         const prevUUID = `${this.data.x[this.selectedPointNumber]},${this.data.y[this.selectedPointNumber]}`;
         this.mockDataService.setDefectIsSelected(prevUUID, false);
       }
@@ -173,5 +169,11 @@ export class PanelComponent implements OnInit, OnDestroy {
   private updateMarkerStyles(color: string[], opacity: number[], size: number[], curveNumber: number) {
     const update = { 'marker': { color, opacity, size } };
     Plotly.restyle('myPanel', update, [curveNumber]);
+  }
+
+  private resetAllMarkerStyles() {
+    this.data.marker!.color[this.selectedPointNumber] = this.markerStyles.color;
+    this.data.marker!.opacity = this.markerStyles.opacity;
+    this.data.marker!.size[this.selectedPointNumber] = this.markerStyles.size;
   }
 }
