@@ -62,6 +62,39 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.createNewPanel();
+    this.setSingleDefectSelection('#myPanel');
+  }
+
+  ngOnDestroy(): void {
+    this.defectSubscription.unsubscribe();
+  }
+
+  private createDefectCircles(defects: Defect[]): Trace {
+    const x: number[] = [];
+    const y: number[] = [];
+    const hovertext: string[] = [];
+    const colors: string[] = [];
+    const size: number[] = [];
+
+    defects.forEach((defect: Defect) => {
+      x.push(defect.x);
+      y.push(defect.y);
+      hovertext.push(`${defect.uuid}: ${defect.severity}`);
+      colors.push(this.markerStyles.color);
+      this.markerStyles.opacity.push(defect.severity / this.maxSeverity);
+      size.push(this.markerStyles.size);
+    });
+
+    return {
+      mode: 'markers',
+      type: 'scatter',
+      x, y, hoverinfo: 'text', hovertext,
+      marker: { color: colors, opacity: this.markerStyles.opacity, size }
+    }
+  }
+
+  private createNewPanel() {
     const panelLayout = this.mockDataService.getPanelLayout();
     const layout = {
       title: { text: 'Panel' },
@@ -91,8 +124,10 @@ export class PanelComponent implements OnInit, OnDestroy {
     };
 
     Plotly.newPlot('myPanel', [this.data], layout, config);
-    
-    const myPanel: any = document.querySelector('#myPanel');
+  }
+
+  private setSingleDefectSelection(panelName: string) {
+    const myPanel: any = document.querySelector(panelName);
     // reference to https://plotly.com/javascript/plotlyjs-events/
     myPanel.on('plotly_click', (data: any) => {
       // console.log(data);
@@ -134,34 +169,6 @@ export class PanelComponent implements OnInit, OnDestroy {
         this.mockDataService.setDefectIsSelected(uuid, true);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.defectSubscription.unsubscribe();
-  }
-
-  private createDefectCircles(defects: Defect[]): Trace {
-    const x: number[] = [];
-    const y: number[] = [];
-    const hovertext: string[] = [];
-    const colors: string[] = [];
-    const size: number[] = [];
-
-    defects.forEach((defect: Defect) => {
-      x.push(defect.x);
-      y.push(defect.y);
-      hovertext.push(`${defect.uuid}: ${defect.severity}`);
-      colors.push(this.markerStyles.color);
-      this.markerStyles.opacity.push(defect.severity / this.maxSeverity);
-      size.push(this.markerStyles.size);
-    });
-
-    return {
-      mode: 'markers',
-      type: 'scatter',
-      x, y, hoverinfo: 'text', hovertext,
-      marker: { color: colors, opacity: this.markerStyles.opacity, size }
-    }
   }
   
   private updateMarkerStyles(color: string[], opacity: number[], size: number[], curveNumber: number) {
