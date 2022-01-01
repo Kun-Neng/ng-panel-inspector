@@ -16,7 +16,7 @@ export class TableComponent implements OnInit, OnDestroy {
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
-    this.columnTitles = ['i', 'x', 'y'];
+    this.columnTitles = ['i', 'x', 'y', 's'];
     this.dataSource.data = Array.from(this.mockDataService.getDefects().values());
     // console.log(this.dataSource);
     this.selectedRow = '';
