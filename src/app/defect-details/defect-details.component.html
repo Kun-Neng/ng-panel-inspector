@@ -6,10 +6,10 @@
         <div>X</div>
         <div>Y</div>
       </td>
-      <td class="defect-value">
-        <div *ngIf="defectDetails.uuid !== ''">{{defectDetails.uuid}}</div>
-        <div *ngIf="defectDetails.x !== -1">{{defectDetails.x}}</div>
-        <div *ngIf="defectDetails.y !== -1">{{defectDetails.y}}</div>
+      <td class="defect-value-container">
+        <div *ngIf="defectDetails.uuid !== ''" class="defect-value">{{defectDetails.uuid}}</div>
+        <div *ngIf="defectDetails.x !== -1" class="defect-value">{{defectDetails.x}}</div>
+        <div *ngIf="defectDetails.y !== -1" class="defect-value">{{defectDetails.y}}</div>
       </td>
       <td class="severity-container">
         <div>

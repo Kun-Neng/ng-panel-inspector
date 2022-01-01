@@ -9,9 +9,8 @@ import { MockDataService } from '../mock-data.service';
   styleUrls: ['./defect-details.component.css']
 })
 export class DefectDetailsComponent implements OnInit, OnDestroy {
-  autoTicks: boolean = false;
   showTicks: boolean = true;
-  tickInterval: number = 1;
+  tickInterval: number = 10;
   max: number = 100;
   min: number = 10;
   step: number = 1;
@@ -50,11 +49,10 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
     this.defectSubscription.unsubscribe();
   }
 
-  getSliderTickInterval(): number | 'auto' {
+  getSliderTickInterval(): number {
     if (this.showTicks) {
-      return this.autoTicks ? 'auto' : this.tickInterval;
+      return this.tickInterval;
     }
-
     return 0;
   }
 
