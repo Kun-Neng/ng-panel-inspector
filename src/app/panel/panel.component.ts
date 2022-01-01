@@ -22,13 +22,17 @@ interface Trace {
 })
 export class PanelComponent implements OnInit, OnDestroy {
   private markerStyles: { color: string, opacity: number[], size: number };
+  private maxSeverity: number;
+  private numDefects: number;
   private data: Trace;
   private selectedPointNumber: number;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
     this.markerStyles = { color: '#FF0000', opacity: [], size: 8 };
+    this.maxSeverity = 100;
     const defects = Array.from(this.mockDataService.getDefects().values());
+    this.numDefects = defects.length;
     this.data = this.createDefectCircles(defects);
     this.selectedPointNumber = -1;
 
@@ -38,7 +42,7 @@ export class PanelComponent implements OnInit, OnDestroy {
           this.resetAllMarkerStyles();
         }
 
-        for (let index = 0; index < 100; index++) {
+        for (let index = 0; index < this.numDefects; index++) {
           if (this.data.x[index] === defect.x && this.data.y[index] === defect.y) {
             this.selectedPointNumber = index;
             break;
@@ -48,7 +52,7 @@ export class PanelComponent implements OnInit, OnDestroy {
         const color = this.data.marker!.color;
         color[this.selectedPointNumber] = '#0000FF';
         const opacity = this.markerStyles.opacity;
-        opacity[this.selectedPointNumber] = defect.severity / 100;
+        opacity[this.selectedPointNumber] = defect.severity / this.maxSeverity;
         const size = this.data.marker!.size;
         size[this.selectedPointNumber] = 12;
   
@@ -123,17 +127,11 @@ export class PanelComponent implements OnInit, OnDestroy {
       }
 
       if (uuid !== '') {
-        if (color[this.selectedPointNumber] === this.markerStyles.color) {
-          color[this.selectedPointNumber] = '#0000FF';
-          size[this.selectedPointNumber] = 12;
-          this.mockDataService.setDefectIsSelected(uuid, true);
-        } else {
-          color[this.selectedPointNumber] = this.markerStyles.color;
-          size[this.selectedPointNumber] = this.markerStyles.size;
-          this.mockDataService.setDefectIsSelected(uuid, false);
-        }
-
+        color[this.selectedPointNumber] = '#0000FF';
+        size[this.selectedPointNumber] = 12;
         this.updateMarkerStyles(color, opacity, size, 0);
+        
+        this.mockDataService.setDefectIsSelected(uuid, true);
       }
     });
   }
@@ -154,7 +152,7 @@ export class PanelComponent implements OnInit, OnDestroy {
       y.push(defect.y);
       hovertext.push(`${defect.uuid}: ${defect.severity}`);
       colors.push(this.markerStyles.color);
-      this.markerStyles.opacity.push(defect.severity / 100);
+      this.markerStyles.opacity.push(defect.severity / this.maxSeverity);
       size.push(this.markerStyles.size);
     });
 
