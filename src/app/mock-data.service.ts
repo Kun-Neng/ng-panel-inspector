@@ -11,7 +11,7 @@ export class MockDataService {
   private numDefects: number = 100;
   private defects: Map<string, Defect> = new Map<string, Defect>();
   private selectedDefect = new Subject<Defect>();
-  $selectedDefectObservable = this.selectedDefect.asObservable();
+  selectedDefectObservable$ = this.selectedDefect.asObservable();
 
   constructor() { }
 

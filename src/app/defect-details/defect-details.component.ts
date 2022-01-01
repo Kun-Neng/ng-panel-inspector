@@ -28,7 +28,7 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
       isSelected: false
     };
 
-    this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
+    this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       if (defect.isSelected) {
         this.defectDetails = {
           uuid: defect.uuid,

@@ -36,7 +36,7 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.data = this.createDefectCircles(defects);
     this.selectedPointNumber = -1;
 
-    this.defectSubscription = this.mockDataService.$selectedDefectObservable.subscribe((defect: Defect) => {
+    this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       if (defect.isSelected) {
         if (this.selectedPointNumber !== -1) {
           this.resetAllMarkerStyles();
