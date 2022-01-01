@@ -1,0 +1,11 @@
+<mat-grid-list cols="4" [rowHeight]="rowHeight">
+  <mat-grid-tile [colspan]="1" [rowspan]="3" [style]="tileStyle">
+    <app-table></app-table>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="3" [rowspan]="2" [style]="tileStyle">
+    <app-panel></app-panel>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="3" [rowspan]="1" [style]="tileStyle">
+    <app-defect-details></app-defect-details>
+  </mat-grid-tile>
+</mat-grid-list>

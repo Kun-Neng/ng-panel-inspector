@@ -1,0 +1,46 @@
+/* table,
+td {
+    border: 1px solid #333;
+} */
+
+tr {
+  line-height: 40px;
+}
+
+.defect-title {
+  width: 50px;
+  font-weight: bold;
+}
+
+.defect-value-container {
+  width: 100px;
+}
+
+.defect-value {
+  text-decoration: underline;
+}
+
+.severity-container {
+  width: 180px;
+}
+
+.severity-title {
+  font-weight: bold;
+}
+
+.severity-slider {
+  width: 120px;
+}
+
+.severity-value-label {
+  font-weight: bold;
+}
+
+.severity-limit {
+  margin-top: -28px;
+  width: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8em;
+}

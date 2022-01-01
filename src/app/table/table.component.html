@@ -1,0 +1,23 @@
+<div class="defect-list">
+  <table mat-table [fixedLayout]="true" [dataSource]="dataSource">
+    <ng-container matColumnDef="i">
+      <th mat-header-cell *matHeaderCellDef> Index </th>
+      <td mat-cell *matCellDef="let element; let i = index;"> {{i}} </td>
+    </ng-container>
+    <ng-container matColumnDef="x">
+      <th mat-header-cell *matHeaderCellDef> X </th>
+      <td mat-cell *matCellDef="let element"> {{element.x}} </td>
+    </ng-container>
+    <ng-container matColumnDef="y">
+      <th mat-header-cell *matHeaderCellDef> Y </th>
+      <td mat-cell *matCellDef="let element"> {{element.y}} </td>
+    </ng-container>
+    <ng-container matColumnDef="s">
+      <th mat-header-cell *matHeaderCellDef> Severity </th>
+      <td mat-cell *matCellDef="let element"> {{element.severity}} </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnTitles"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnTitles;"
+      (click)="getDefect(row)" [class.isSelected]="row.isSelected"></tr>
+  </table>
+</div>
