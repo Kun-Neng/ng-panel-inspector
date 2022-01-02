@@ -102,7 +102,7 @@ export class PanelComponent implements OnInit, OnDestroy {
       showlegend: false,
       autosize: true,
       margin: {
-        t: 40, b: 30,
+        t: 100, b: 30,
         l: 40, r: 30,
       },
       hovermode: 'closest',
