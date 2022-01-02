@@ -54,9 +54,11 @@ export class MainComponent implements OnInit, OnDestroy {
       // console.log(result);
 
       if (result !== undefined) {
-        this.panelWidth = result.width;
-        this.panelHeight = result.height;
-        this.mockDataService.setPanelLayout(result);
+        if (result.width >= 10 && result.height >= 10) {
+          this.panelWidth = result.width;
+          this.panelHeight = result.height;
+          this.mockDataService.setPanelLayout(result);
+        }
       }
     });
   }
