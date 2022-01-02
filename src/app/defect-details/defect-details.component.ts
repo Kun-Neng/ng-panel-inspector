@@ -17,6 +17,7 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
 
   defectDetails: Defect;
 
+  private panelSubscription: Subscription;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
@@ -27,6 +28,18 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
       severity: -1,
       isSelected: false
     };
+
+    this.panelSubscription = this.mockDataService.isPanelUpdatedObservable$.subscribe((isPanelUpdated: boolean) => {
+      if (isPanelUpdated) {
+        this.defectDetails = {
+          uuid: '',
+          x: -1,
+          y: -1,
+          severity: -1,
+          isSelected: false
+        };
+      }
+    });
 
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       if (defect.isSelected) {
@@ -46,6 +59,7 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.panelSubscription.unsubscribe();
     this.defectSubscription.unsubscribe();
   }
 

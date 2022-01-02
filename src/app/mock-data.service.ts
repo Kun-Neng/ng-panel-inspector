@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Defect } from './interface/defect';
 import { Panel } from './interface/panel';
 
@@ -12,11 +12,18 @@ export class MockDataService {
   private defects: Map<string, Defect> = new Map<string, Defect>();
   private selectedDefect = new Subject<Defect>();
   selectedDefectObservable$ = this.selectedDefect.asObservable();
+  private isPanelUpdated = new BehaviorSubject<boolean>(false);
+  isPanelUpdatedObservable$ = this.isPanelUpdated.asObservable();
 
   constructor() { }
 
   getPanelLayout(): Panel {
     return this.panelLayout;
+  }
+
+  setPanelLayout(panel: Panel) {
+    this.panelLayout = panel;
+    this.isPanelUpdated.next(true);
   }
 
   getDefects(): Map<string, Defect> {
@@ -47,6 +54,7 @@ export class MockDataService {
 
   createPanel(panelLayout: Panel = this.panelLayout): number {
     this.panelLayout = panelLayout;
+    this.defects.clear();
     const pixels = this.panelLayout.width * this.panelLayout.height;
     let chosenIndex: number[] = [];
 

@@ -26,6 +26,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   private numDefects: number;
   private data: Trace;
   private selectedPointNumber: number;
+  private panelSubscription: Subscription;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
@@ -35,6 +36,17 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.numDefects = defects.length;
     this.data = this.createDefectCircles(defects);
     this.selectedPointNumber = -1;
+
+    this.panelSubscription = this.mockDataService.isPanelUpdatedObservable$.subscribe((isPanelUpdated: boolean) => {
+      if (isPanelUpdated) {
+        const defects = Array.from(this.mockDataService.getDefects().values());
+        this.data = this.createDefectCircles(defects);
+        this.selectedPointNumber = -1;
+        
+        this.createNewPanel();
+        this.setSingleDefectSelection('#myPanel');
+      }
+    });
 
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       if (defect.isSelected) {
@@ -67,6 +79,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.panelSubscription.unsubscribe();
     this.defectSubscription.unsubscribe();
   }
 
