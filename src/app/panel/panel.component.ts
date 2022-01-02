@@ -93,7 +93,7 @@ export class PanelComponent implements OnInit, OnDestroy {
     defects.forEach((defect: Defect) => {
       x.push(defect.x);
       y.push(defect.y);
-      hovertext.push(`${defect.uuid}: ${defect.severity}`);
+      hovertext.push(`${defect.uuid}`);
       colors.push(this.markerStyles.color);
       this.markerStyles.opacity.push(defect.severity / this.maxSeverity);
       size.push(this.markerStyles.size);
