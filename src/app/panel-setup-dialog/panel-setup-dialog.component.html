@@ -1,5 +1,18 @@
 <h2 mat-dialog-title>Panel Setup</h2>
-<mat-dialog-content>Please input width and height</mat-dialog-content>
+<mat-dialog-content>
+  <div class="panel-setup-container">
+    <mat-form-field appearance="fill" floatLabel="always">
+      <mat-label>Width</mat-label>
+      <input matInput type="number" class="panel-input" placeholder="1920"
+        min="1" max="1E9" [(ngModel)]="panel.width">
+    </mat-form-field>
+    <mat-form-field appearance="fill" floatLabel="always">
+      <mat-label>Height</mat-label>
+      <input matInput type="number" class="panel-input" placeholder="1080"
+        min="1" max="1E9" [(ngModel)]="panel.height">
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="onSetup()">Setup</button>
   <button mat-button mat-dialog-close (click)="onCancel()">Cancel</button>
