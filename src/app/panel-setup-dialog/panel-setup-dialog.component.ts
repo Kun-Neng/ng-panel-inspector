@@ -18,6 +18,21 @@ export class PanelSetupDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  checkValue(event: KeyboardEvent, element: HTMLInputElement) {
+    // console.log(event.key);
+    // console.log(element.value);
+
+    if (event.key === 'e' || event.key === '-') {
+      event.preventDefault();
+    }
+
+    const value = parseInt(`${element.value}${event.key}`);
+    // console.log(value);
+    if (value < 10 || value > 1E9) {
+      event.preventDefault();
+    }
+  }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
