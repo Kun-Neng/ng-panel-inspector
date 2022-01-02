@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Defect } from '../interface/defect';
 import { MockDataService } from '../mock-data.service';
+import { Defect } from '../interface/defect';
 
 @Component({
   selector: 'app-defect-details',
@@ -21,35 +21,17 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
-    this.defectDetails = {
-      uuid: '',
-      x: -1,
-      y: -1,
-      severity: -1,
-      isSelected: false
-    };
+    this.defectDetails = this.resetDefectDetails();
 
     this.panelSubscription = this.mockDataService.isPanelUpdatedObservable$.subscribe((isPanelUpdated: boolean) => {
       if (isPanelUpdated) {
-        this.defectDetails = {
-          uuid: '',
-          x: -1,
-          y: -1,
-          severity: -1,
-          isSelected: false
-        };
+        this.defectDetails = this.resetDefectDetails();
       }
     });
 
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       if (defect.isSelected) {
-        this.defectDetails = {
-          uuid: defect.uuid,
-          x: defect.x,
-          y: defect.y,
-          severity: defect.severity,
-          isSelected: defect.isSelected
-        };
+        this.defectDetails = defect;
       }
     });
   }
@@ -77,5 +59,15 @@ export class DefectDetailsComponent implements OnInit, OnDestroy {
   updateSeverity(value: number) {
     // console.log(value);
     this.mockDataService.setDefectSeverity(this.defectDetails.uuid, value);
+  }
+
+  private resetDefectDetails(): Defect {
+    return {
+      uuid: '',
+      x: -1,
+      y: -1,
+      severity: -1,
+      isSelected: false
+    };
   }
 }
