@@ -13,6 +13,7 @@ export class TableComponent implements OnInit, OnDestroy {
   columnTitles: string[];
   dataSource = new MatTableDataSource<Defect>();
   private selectedRow: string;
+  private panelSubscription: Subscription;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
@@ -20,6 +21,13 @@ export class TableComponent implements OnInit, OnDestroy {
     this.dataSource.data = Array.from(this.mockDataService.getDefects().values());
     // console.log(this.dataSource);
     this.selectedRow = '';
+
+    this.panelSubscription = this.mockDataService.isPanelUpdatedObservable$.subscribe((isPanelUpdated: boolean) => {
+      if (isPanelUpdated) {
+        this.dataSource.data = Array.from(this.mockDataService.getDefects().values());
+        this.selectedRow = '';
+      }
+    });
 
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       this.selectedRow = defect.uuid;
@@ -42,6 +50,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.panelSubscription.unsubscribe();
     this.defectSubscription.unsubscribe();
   }
 
