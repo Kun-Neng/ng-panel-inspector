@@ -3,13 +3,13 @@
   <div class="panel-setup-container">
     <mat-form-field appearance="fill" floatLabel="always">
       <mat-label>Width</mat-label>
-      <input matInput type="number" class="panel-input" placeholder="1920"
-        min="10" max="1E9" [(ngModel)]="panel.width">
+      <input matInput #panelWidth type="number" class="panel-input" placeholder="1920"
+        min="10" max="1E9" (keypress)="checkValue($event, panelWidth)" [(ngModel)]="panel.width">
     </mat-form-field>
     <mat-form-field appearance="fill" floatLabel="always">
       <mat-label>Height</mat-label>
-      <input matInput type="number" class="panel-input" placeholder="1080"
-        min="10" max="1E9" [(ngModel)]="panel.height">
+      <input matInput #panelHeight type="number" class="panel-input" placeholder="1080"
+        min="10" max="1E9" (keypress)="checkValue($event, panelHeight)" [(ngModel)]="panel.height">
     </mat-form-field>
   </div>
 </mat-dialog-content>
