@@ -26,6 +26,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   private numDefects: number;
   private data: Trace;
   private selectedPointNumber: number;
+  private panelSubscription: Subscription;
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
@@ -35,6 +36,17 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.numDefects = defects.length;
     this.data = this.createDefectCircles(defects);
     this.selectedPointNumber = -1;
+
+    this.panelSubscription = this.mockDataService.isPanelUpdatedObservable$.subscribe((isPanelUpdated: boolean) => {
+      if (isPanelUpdated) {
+        const defects = Array.from(this.mockDataService.getDefects().values());
+        this.data = this.createDefectCircles(defects);
+        this.selectedPointNumber = -1;
+        
+        this.createNewPanel();
+        this.setSingleDefectSelection('#myPanel');
+      }
+    });
 
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       if (defect.isSelected) {
@@ -62,6 +74,40 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.createNewPanel();
+    this.setSingleDefectSelection('#myPanel');
+  }
+
+  ngOnDestroy(): void {
+    this.panelSubscription.unsubscribe();
+    this.defectSubscription.unsubscribe();
+  }
+
+  private createDefectCircles(defects: Defect[]): Trace {
+    const x: number[] = [];
+    const y: number[] = [];
+    const hovertext: string[] = [];
+    const colors: string[] = [];
+    const size: number[] = [];
+
+    defects.forEach((defect: Defect) => {
+      x.push(defect.x);
+      y.push(defect.y);
+      hovertext.push(`${defect.uuid}`);
+      colors.push(this.markerStyles.color);
+      this.markerStyles.opacity.push(defect.severity / this.maxSeverity);
+      size.push(this.markerStyles.size);
+    });
+
+    return {
+      mode: 'markers',
+      type: 'scatter',
+      x, y, hoverinfo: 'text', hovertext,
+      marker: { color: colors, opacity: this.markerStyles.opacity, size }
+    }
+  }
+
+  private createNewPanel() {
     const panelLayout = this.mockDataService.getPanelLayout();
     const layout = {
       title: { text: 'Panel' },
@@ -69,7 +115,7 @@ export class PanelComponent implements OnInit, OnDestroy {
       showlegend: false,
       autosize: true,
       margin: {
-        t: 40, b: 30,
+        t: 100, b: 30,
         l: 40, r: 30,
       },
       hovermode: 'closest',
@@ -91,8 +137,10 @@ export class PanelComponent implements OnInit, OnDestroy {
     };
 
     Plotly.newPlot('myPanel', [this.data], layout, config);
-    
-    const myPanel: any = document.querySelector('#myPanel');
+  }
+
+  private setSingleDefectSelection(panelName: string) {
+    const myPanel: any = document.querySelector(panelName);
     // reference to https://plotly.com/javascript/plotlyjs-events/
     myPanel.on('plotly_click', (data: any) => {
       // console.log(data);
@@ -134,34 +182,6 @@ export class PanelComponent implements OnInit, OnDestroy {
         this.mockDataService.setDefectIsSelected(uuid, true);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.defectSubscription.unsubscribe();
-  }
-
-  private createDefectCircles(defects: Defect[]): Trace {
-    const x: number[] = [];
-    const y: number[] = [];
-    const hovertext: string[] = [];
-    const colors: string[] = [];
-    const size: number[] = [];
-
-    defects.forEach((defect: Defect) => {
-      x.push(defect.x);
-      y.push(defect.y);
-      hovertext.push(`${defect.uuid}: ${defect.severity}`);
-      colors.push(this.markerStyles.color);
-      this.markerStyles.opacity.push(defect.severity / this.maxSeverity);
-      size.push(this.markerStyles.size);
-    });
-
-    return {
-      mode: 'markers',
-      type: 'scatter',
-      x, y, hoverinfo: 'text', hovertext,
-      marker: { color: colors, opacity: this.markerStyles.opacity, size }
-    }
   }
   
   private updateMarkerStyles(color: string[], opacity: number[], size: number[], curveNumber: number) {
