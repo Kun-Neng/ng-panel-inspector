@@ -32,7 +32,12 @@ export class TableComponent implements OnInit, OnDestroy {
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
       this.selectedRow = defect.uuid;
 
-      const thisRow = this.dataSource.data.find((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
+      const clickedIndex = this.dataSource.data.findIndex((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
+      if (clickedIndex > 0) {
+        this.scrollToDefectIndex(String(clickedIndex));
+      }
+
+      const thisRow = this.dataSource.data[clickedIndex];
       if (thisRow) {
         thisRow.isSelected = defect.isSelected;
       }
@@ -65,5 +70,17 @@ export class TableComponent implements OnInit, OnDestroy {
     
     row.isSelected = !row.isSelected;
     this.mockDataService.setDefectIsSelected(row.uuid, row.isSelected);
+  }
+
+  private scrollToDefectIndex(defectID: string) {
+    let element = document.getElementById(defectID);
+    // console.log(element);
+    if (element && element != undefined && element != null) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    }
   }
 }
