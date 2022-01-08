@@ -1,0 +1,9 @@
+runtime: nodejs16
+
+handlers:
+  - url: /
+    static_files: dist/ng-panel-inspector/index.html
+    upload: dist/ng-panel-inspector/index.html
+
+  - url: /
+    static_dir: dist/ng-panel-inspector
