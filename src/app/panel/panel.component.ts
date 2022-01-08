@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MockDataService } from '../mock-data.service';
+import { Panel } from '../interface/panel';
 import { Defect } from '../interface/defect';
 
 declare const Plotly: any;
@@ -21,6 +22,7 @@ interface Trace {
   styleUrls: ['./panel.component.css']
 })
 export class PanelComponent implements OnInit, OnDestroy {
+  private panelLayout: Panel;
   private markerStyles: { color: string, opacity: number[], size: number };
   private maxSeverity: number;
   private numDefects: number;
@@ -30,6 +32,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   private defectSubscription: Subscription;
 
   constructor(private mockDataService: MockDataService) {
+    this.panelLayout = this.mockDataService.getPanelLayout();
     this.markerStyles = { color: '#FF0000', opacity: [], size: 8 };
     this.maxSeverity = 100;
     const defects = Array.from(this.mockDataService.getDefects().values());
@@ -45,6 +48,7 @@ export class PanelComponent implements OnInit, OnDestroy {
         
         this.createNewPanel();
         this.setSingleDefectSelection('#myPanel');
+        this.setDoubleClickActionOnPanel('#myPanel');
       }
     });
 
@@ -76,6 +80,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.createNewPanel();
     this.setSingleDefectSelection('#myPanel');
+    this.setDoubleClickActionOnPanel('#myPanel');
   }
 
   ngOnDestroy(): void {
@@ -108,7 +113,6 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   private createNewPanel() {
-    const panelLayout = this.mockDataService.getPanelLayout();
     const layout = {
       title: { text: 'Panel' },
       height: window.screen.height * 0.6,
@@ -121,11 +125,11 @@ export class PanelComponent implements OnInit, OnDestroy {
       hovermode: 'closest',
       xaxis: {
         color: 'black',
-        range: [0, panelLayout.width]
+        range: [0, this.panelLayout.width]
       },
       yaxis: {
         color: 'black',
-        range: [0, panelLayout.height]
+        range: [0, this.panelLayout.height]
       },
     };
 
@@ -181,6 +185,24 @@ export class PanelComponent implements OnInit, OnDestroy {
         
         this.mockDataService.setDefectIsSelected(uuid, true);
       }
+    });
+  }
+
+  private setDoubleClickActionOnPanel(panelName: string) {
+    const myPanel: any = document.querySelector(panelName);
+    // reference to https://plotly.com/javascript/plotlyjs-events/
+    myPanel.on('plotly_doubleclick', (data: any) => {
+      const update = {
+        xaxis: {
+          color: 'black',
+          range: [0, this.panelLayout.width]
+        },
+        yaxis: {
+          color: 'black',
+          range: [0, this.panelLayout.height]
+        }
+      };
+      Plotly.relayout('myPanel', update);
     });
   }
   
