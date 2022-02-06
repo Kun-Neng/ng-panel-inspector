@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { MockDataService } from '../mock-data.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { Defect } from '../interface/defect';
+import { DEFECT_SOURCE } from '../defect-source';
 
 @Component({
   selector: 'app-table',
@@ -30,23 +31,25 @@ export class TableComponent implements OnInit, OnDestroy {
     });
 
     this.defectSubscription = this.mockDataService.selectedDefectObservable$.subscribe((defect: Defect) => {
-      this.selectedRow = defect.uuid;
+      if (defect.sourceFrom === DEFECT_SOURCE.PANEL) {
+        this.selectedRow = defect.uuid;
 
-      const clickedIndex = this.dataSource.data.findIndex((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
-      if (clickedIndex > 0) {
-        this.scrollToDefectIndex(String(clickedIndex));
-      }
-
-      const thisRow = this.dataSource.data[clickedIndex];
-      if (thisRow) {
-        thisRow.isSelected = defect.isSelected;
-      }
-      /*this.dataSource.data = this.dataSource.data.filter((defectInTable: Defect) => {
-        if (defectInTable.uuid === defect.uuid) {
-          defectInTable.isSelected = defect.isSelected;
+        const clickedIndex = this.dataSource.data.findIndex((defectInTable: Defect) => defectInTable.uuid === defect.uuid);
+        if (clickedIndex !== -1) {
+          this.scrollToDefectIndex(String(clickedIndex));
         }
-        return true;
-      });*/
+
+        const thisRow = this.dataSource.data[clickedIndex];
+        if (thisRow) {
+          thisRow.isSelected = defect.isSelected;
+        }
+        /*this.dataSource.data = this.dataSource.data.filter((defectInTable: Defect) => {
+          if (defectInTable.uuid === defect.uuid) {
+            defectInTable.isSelected = defect.isSelected;
+          }
+          return true;
+        });*/
+      }
     });
   }
 
@@ -69,7 +72,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.selectedRow = row.uuid;
     
     row.isSelected = !row.isSelected;
-    this.mockDataService.setDefectIsSelected(row.uuid, row.isSelected);
+    this.mockDataService.setDefectIsSelected(row.uuid, row.isSelected, DEFECT_SOURCE.TABLE);
   }
 
   private scrollToDefectIndex(defectID: string) {
