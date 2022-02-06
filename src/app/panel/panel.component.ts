@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { MockDataService } from '../mock-data.service';
 import { Panel } from '../interface/panel';
 import { Defect } from '../interface/defect';
+import { DEFECT_SOURCE } from '../defect-source';
 
 declare const Plotly: any;
 
@@ -183,7 +184,7 @@ export class PanelComponent implements OnInit, OnDestroy {
         size[this.selectedPointNumber] = 12;
         this.updateMarkerStyles(color, opacity, size, 0);
         
-        this.mockDataService.setDefectIsSelected(uuid, true);
+        this.mockDataService.setDefectIsSelected(uuid, true, DEFECT_SOURCE.PANEL);
       }
     });
   }

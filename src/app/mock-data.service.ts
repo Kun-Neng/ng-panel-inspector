@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Defect } from './interface/defect';
 import { Panel } from './interface/panel';
+import { DEFECT_SOURCE } from './defect-source';
 
 @Injectable({
   providedIn: 'root'
@@ -44,10 +45,11 @@ export class MockDataService {
     });
   }
 
-  setDefectIsSelected(uuid: string, isSelected: boolean) {
+  setDefectIsSelected(uuid: string, isSelected: boolean, sourceFrom?: DEFECT_SOURCE) {
     if (this.defects.has(uuid)) {
       const thisDefect = this.defects.get(uuid);
       thisDefect!.isSelected = isSelected;
+      thisDefect!.sourceFrom = sourceFrom ?? DEFECT_SOURCE.NONE;
       this.selectedDefect.next(thisDefect!);
     }
   }
